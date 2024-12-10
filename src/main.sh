@@ -47,8 +47,6 @@ echo -e "\u001b[36mVerifying Docker and Setting Context."
 ssh -p "${INPUT_PORT}" "${INPUT_USER}@${INPUT_HOST}" "docker info" > /dev/null
 
 docker context create remote --docker "host=ssh://${INPUT_USER}@${INPUT_HOST}:${INPUT_PORT}"
-docker context ls
-docker context use remote
 
 if [ -n "${INPUT_ENV_FILE}" ];then
     echo -e "\u001b[36mSourcing Environment File: ${INPUT_ENV_FILE}"
@@ -60,5 +58,10 @@ if [ -n "${INPUT_ENV_FILE}" ];then
     # export ENV_FILE="${INPUT_ENV_FILE}"
 fi
 
-echo -e "\u001b[36mDeploying Stack: \u001b[37;1m${INPUT_NAME}"
-docker stack deploy -c "${INPUT_FILE}" "${INPUT_NAME}"
+DEPLOY_CMD="docker -c remote stack deploy -c \"${INPUT_FILE}\" \"${INPUT_NAME}\""
+ if [ "${INPUT_WITH_REGISTRY_AUTH}" == "true" ]; then
+     echo -e "\u001b[36mAdding with-registry-auth flag to command."
+     DEPLOY_CMD="$DEPLOY_CMD --with-registry-auth"
+ fi
+
+ echo -e "\u001b[36mDeploying Stack: \u001b[37;1m${INPUT_NAME}"
