@@ -59,9 +59,10 @@ if [ -n "${INPUT_ENV_FILE}" ];then
 fi
 
 DEPLOY_CMD="docker -c remote stack deploy -c \"${INPUT_FILE}\" \"${INPUT_NAME}\""
- if [ "${INPUT_WITH_REGISTRY_AUTH}" == "true" ]; then
-     echo -e "\u001b[36mAdding with-registry-auth flag to command."
-     DEPLOY_CMD="$DEPLOY_CMD --with-registry-auth"
- fi
+if [ "${INPUT_WITH_REGISTRY_AUTH}" == "true" ]; then
+    echo -e "\u001b[36mAdding with-registry-auth flag to command."
+    DEPLOY_CMD="$DEPLOY_CMD --with-registry-auth"
+fi
 
- echo -e "\u001b[36mDeploying Stack: \u001b[37;1m${INPUT_NAME}"
+echo -e "\u001b[36mDeploying Stack: \u001b[37;1m${INPUT_NAME}"
+eval "${DEPLOY_CMD}"
